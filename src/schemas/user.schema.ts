@@ -39,8 +39,7 @@ export const registerUserSchema = z.object({
       .min(5, "Please enter a complete address")
       .trim(),
     
-    role: z.string()
-      .min(1, "Please select a role"),
+    role: z.enum(['CLIENT', 'COMPANY', 'ADMIN']),
     
     password: z.string()
       .min(1, "Password is required")
