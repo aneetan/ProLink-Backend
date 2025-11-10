@@ -64,6 +64,7 @@ model CompanyDocs{
   docsId            Int     @id @default(autoincrement())
   logo              Bytes
   businessLicense   Bytes
+  taxCertificate    Bytes
   ownerId           Bytes?
   companyId         Int
   company           Company @relation(fields: [companyId], references: [id])
