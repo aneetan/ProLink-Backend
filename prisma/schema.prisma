@@ -62,10 +62,10 @@ model Services {
 
 model CompanyDocs{
   docsId            Int     @id @default(autoincrement())
-  logo              Bytes
-  businessLicense   Bytes
-  taxCertificate    Bytes
-  ownerId           Bytes?
+  logo              String
+  businessLicense   String
+  taxCertificate    String
+  ownerId           String?
   companyId         Int
   company           Company @relation(fields: [companyId], references: [id])
 }

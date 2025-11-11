@@ -16,10 +16,10 @@ export interface CompanyAttributes{
 
 export interface CompanyDocs {
    docsId: number;
-   logo: Uint8Array;
-   businessLicense: Uint8Array;
-   taxCertificate: Uint8Array;
-   ownerId?: Uint8Array;
+   logo: File;
+   businessLicense: File;
+   taxCertificate: File;
+   ownerId?: File;
    companyId: number;
 }
 
@@ -39,10 +39,10 @@ export interface CompanyInfoDto{
 }
 
 export interface DocsDto{
-   logo: File | null;
+   logo: File | null ;
    businessLicense: File | null;
    taxCertificate: File | null;
-   ownerId: File | null;
+   ownerId?: File | null;
 }
 
 export interface ServicePricingDto{
@@ -52,9 +52,34 @@ export interface ServicePricingDto{
    avgDeliveryTime: string;
 }
 
-export interface CompanyDto{
+export interface CreateCompanyDto{
    companyInfo: CompanyInfoDto;
    docs: DocsDto;
    servicePricing: ServicePricingDto;
    userId: number;
+}
+
+export interface CreateCompanyData {
+  // Company Info
+  name: string;
+  registrationNo: string;
+  description: string;
+  establishedYear: string;
+  serviceCategory: string;
+  websiteUrl?: string;
+  
+  // Service Pricing
+  priceRangeMin: number;
+  priceRangeMax: number;
+  avgDeliveryTime: string;
+  servicesOffered: string[];
+  
+  // Documents as Buffers
+  logo: string;
+  businessLicense: string;
+  taxCertificate: string;
+  ownerId?: string;
+  
+  // User
+  userId: number;
 }
