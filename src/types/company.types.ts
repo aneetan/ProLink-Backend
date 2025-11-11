@@ -1,4 +1,4 @@
-export interface Company{
+export interface CompanyAttributes{
    id: number;
    name: string;
    registrationNo: string;
@@ -56,4 +56,5 @@ export interface CompanyDto{
    companyInfo: CompanyInfoDto;
    docs: DocsDto;
    servicePricing: ServicePricingDto;
+   userId: number;
 }
