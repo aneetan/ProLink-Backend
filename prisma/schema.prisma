@@ -20,6 +20,16 @@ enum Status {
   DECLINED
 }
 
+enum WorkType {
+  REMOTE
+  ONSITE
+}
+
+enum Urgency {
+  LOW
+  MEDIUM
+  HIGH
+}
 
 model User {
   id             Int       @id @default(autoincrement())
@@ -31,4 +41,60 @@ model User {
   password       String 
   status         Status   @default(PENDING)
   emailVerified  Boolean  @default(false)
+  companies      Company[]
+  requirements   Requirement[]
+}
+
+model Company {
+  id                Int         @id @default(autoincrement())
+  name              String   
+  registrationNo    String      @unique
+  description       String
+  establishedYear   String
+  serviceCategory   String
+  websiteUrl        String?
+  services          Services[]
+  priceRangeMin     Int
+  priceRangeMax     Int
+  avgDeliveryTime   String
+  userId            Int
+  user              User        @relation(fields: [userId], references: [id])
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  docs              CompanyDocs[]
+}
+
+model Services {
+  serviceId   Int     @id @default(autoincrement())
+  companyId   Int
+  company     Company @relation(fields: [companyId], references: [id])    
+  service     String
+}
+
+model CompanyDocs{
+  docsId            Int     @id @default(autoincrement())
+  logo              String
+  businessLicense   String
+  taxCertificate    String
+  ownerId           String?
+  companyId         Int
+  company           Company @relation(fields: [companyId], references: [id])
+}
+
+model Requirement {
+  id              Int       @id @default(autoincrement())
+  title           String
+  description     String
+  workType        WorkType
+  minimumBudget   Int
+  maximumBudget   Int
+  category        String
+  timeline        String
+  skills          String[]
+  attachment      String    @default("")
+  urgency         Urgency
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  userId          Int
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
