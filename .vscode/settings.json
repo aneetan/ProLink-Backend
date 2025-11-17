@@ -3,6 +3,7 @@
       "autoincrement",
       "dbconfig",
       "prismaclient",
-      "prolink"
+      "prolink",
+      "Respository"
    ]
 }

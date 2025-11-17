@@ -1,12 +1,14 @@
-export interface RequirementFormData {
+export interface RequirementAttribute {
+   id: number,
   title: string;
   description: string;
-  workType: 'remote' | 'onsite';
+  workType: 'REMOTE' | 'ONSITE';
   minimumBudget: number;
   maximumBudget: number;
   category: string;
   timeline: string;
   skills: string[];
   attachment: '';
-  urgency: 'low' | 'medium' | 'high';
+  urgency: 'LOW' | 'MEDIUM' | 'HIGH';
+  userId: number;
 }
