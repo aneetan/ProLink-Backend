@@ -4,11 +4,12 @@ import requirementRepository from "../repository/requirement.repository";
 import { errorResponse } from "../helpers/errorMsg.helper";
 import { verifyAccessToken } from "../middleware/verifyAccessToken";
 import { requireClient } from "../middleware/validateRole";
+import { webhookService } from "../services/embedding/webhook.services";
 
-class AuthController {
+class RequirementController {
    createRequirement = [
-      verifyAccessToken,
-      requireClient,
+      // verifyAccessToken,
+      // requireClient,
       async(req:Request<{}, {}, RequirementAttribute>, res: Response, next: NextFunction): Promise<void> => {
          try {
             const requirementDto = req.body;
@@ -27,11 +28,14 @@ class AuthController {
                userId: requirementDto.userId
             }
 
-            const newRepository = await requirementRepository.createRequirement(requirementData);
+            const newRequirement = await requirementRepository.createRequirement(requirementData);
+
+            //Trigger embedding generation in background
+            webhookService.processNewRequirement(newRequirement.id, requirementData);
 
             res.status(200).json({
                message: "Requirement created",
-               body: newRepository
+               body: newRequirement
             })
 
          } catch (e) {
@@ -40,6 +44,41 @@ class AuthController {
          }
       }
    ];
+
+    // Find matching companies for a requirement
+   findMatchingCompanies = [
+      // verifyAccessToken,
+      async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+         try {
+            const { requirementId } = req.params;
+            const { topK = 5 } = req.query;
+
+            if (!requirementId) {
+               res.status(400).json({
+                  success: false,
+                  error: "requirementId is required"
+               });
+               return;
+            }
+
+            const matches = await webhookService.findCompaniesForRequirement(
+               parseInt(requirementId), 
+               parseInt(topK as string)
+            );
+
+            res.status(200).json({
+               success: true,
+               requirementId: parseInt(requirementId),
+               matches: matches,
+               totalMatches: matches.length
+            });
+
+         } catch (e) {
+            errorResponse(e, res, "Error finding matching companies");
+            next(e);
+         }
+      }
+   ];
 }
 
-export default new AuthController;
+export default new RequirementController;

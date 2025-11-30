@@ -4,6 +4,9 @@ import dotenv from "dotenv";
 import authRouter from './routes/auth.routes';
 import companyRouter from './routes/company.routes';
 import requirementRouter from './routes/requirement.route';
+import { findMatches, runDemo, setupExamples } from './example/match.example';
+import pineconeService from './services/pinecone.services';
+import similarityRouter from './routes/similarity.route';
 
 dotenv.config();
 
@@ -13,9 +16,13 @@ const PORT = process.env.PORT;
 app.use(cors());
 app.use(express.json());
 
+pineconeService.initialize();
+
 app.use('/auth', authRouter);
 app.use('/company', companyRouter);
 app.use('/client/requirement', requirementRouter);
+app.use('/client', similarityRouter);
+
 
 
 app.get('/', async(req: Request, res: Response) => {
