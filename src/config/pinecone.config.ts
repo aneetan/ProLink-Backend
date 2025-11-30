@@ -1,5 +1,5 @@
 export const PineconeConfig = {
-  apiKey: process.env.PINECONE_API_KEY || 'your-pinecone-api-key',
+  apiKey: process.env.PINECONE_API_KEY,
   environment: process.env.PINECONE_ENVIRONMENT || 'us-east1-aws',
   
   // Index settings

@@ -4,11 +4,12 @@ import requirementRepository from "../repository/requirement.repository";
 import { errorResponse } from "../helpers/errorMsg.helper";
 import { verifyAccessToken } from "../middleware/verifyAccessToken";
 import { requireClient } from "../middleware/validateRole";
+import { webhookService } from "../services/embedding/webhook.services";
 
 class AuthController {
    createRequirement = [
-      verifyAccessToken,
-      requireClient,
+      // verifyAccessToken,
+      // requireClient,
       async(req:Request<{}, {}, RequirementAttribute>, res: Response, next: NextFunction): Promise<void> => {
          try {
             const requirementDto = req.body;
@@ -27,11 +28,14 @@ class AuthController {
                userId: requirementDto.userId
             }
 
-            const newRepository = await requirementRepository.createRequirement(requirementData);
+            const newRequirement = await requirementRepository.createRequirement(requirementData);
+
+            //Trigger embedding generation in background
+            webhookService.processNewRequirement(newRequirement.id, requirementData);
 
             res.status(200).json({
                message: "Requirement created",
-               body: newRepository
+               body: newRequirement
             })
 
          } catch (e) {

@@ -5,11 +5,20 @@ import { PineconeVector } from "../types/pinecone.types";
 class PineconeService {
    private pinecone: Pinecone;
    private index: any;
+   private isInitialized: boolean = false;
 
    constructor() {
+       console.log('🔧 PineconeService: Initializing...');
+
       this.pinecone = new Pinecone({
          apiKey: PineconeConfig.apiKey,
       });
+
+        console.log('✅ Pinecone client created');
+
+          this.index = this.pinecone.Index(PineconeConfig.index.name);
+    console.log('✅ Pinecone index reference obtained');
+     console.log(`🔗 Connecting to index: ${PineconeConfig.index.name}`);
    }
 
    //Initialize Pinecone
@@ -47,7 +56,7 @@ class PineconeService {
       embedding: number[], 
       text: string, 
       metadata: any = {},
-      namespace: string = PineconeConfig.namespaces.client
+      namespace
    ) {
       try {
          if(!this.index) {
