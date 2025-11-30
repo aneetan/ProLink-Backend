@@ -6,12 +6,13 @@ import { verifyAccessToken } from "../middleware/verifyAccessToken";
 import companyRepository from "../repository/company.repository";
 import { errorResponse } from "../helpers/errorMsg.helper";
 import { parseJSONField } from "../helpers/parseJsonField";
+import { webhookService } from "../services/embedding/webhook.services";
 
 class CompanyController {
    createCompany = [
-      validateSchema(CompanySchema),
-      verifyAccessToken,
-      requireCompany,
+      // validateSchema(CompanySchema),
+      // verifyAccessToken,
+      // requireCompany,
       
       async(req:Request<{}, {}, CompanyInput>, res: Response, next: NextFunction): Promise<void> => {
          try {
@@ -42,6 +43,9 @@ class CompanyController {
 
          const result = await companyRepository.registerCompany(formData);
 
+         //Trigger embedding generation in background
+         webhookService.processNewCompany(result.company.id, result.company);
+
             res.status(201).json({
                success: true,
                message: "Company registered successfully",
@@ -58,7 +62,6 @@ class CompanyController {
          }
 
       }
-      
    ]
 
 }

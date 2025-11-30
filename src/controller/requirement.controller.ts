@@ -6,7 +6,7 @@ import { verifyAccessToken } from "../middleware/verifyAccessToken";
 import { requireClient } from "../middleware/validateRole";
 import { webhookService } from "../services/embedding/webhook.services";
 
-class AuthController {
+class RequirementController {
    createRequirement = [
       // verifyAccessToken,
       // requireClient,
@@ -44,6 +44,41 @@ class AuthController {
          }
       }
    ];
+
+    // Find matching companies for a requirement
+   findMatchingCompanies = [
+      verifyAccessToken,
+      async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+         try {
+            const { requirementId } = req.params;
+            const { topK = 5 } = req.query;
+
+            if (!requirementId) {
+               res.status(400).json({
+                  success: false,
+                  error: "requirementId is required"
+               });
+               return;
+            }
+
+            const matches = await webhookService.findCompaniesForRequirement(
+               parseInt(requirementId), 
+               parseInt(topK as string)
+            );
+
+            res.status(200).json({
+               success: true,
+               requirementId: parseInt(requirementId),
+               matches: matches,
+               totalMatches: matches.length
+            });
+
+         } catch (e) {
+            errorResponse(e, res, "Error finding matching companies");
+            next(e);
+         }
+      }
+   ];
 }
 
-export default new AuthController;
+export default new RequirementController;
