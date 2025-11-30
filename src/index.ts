@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import authRouter from './routes/auth.routes';
 import companyRouter from './routes/company.routes';
 import requirementRouter from './routes/requirement.route';
+import { findMatches, runDemo, setupExamples } from './example/match.example';
 
 dotenv.config();
 
@@ -12,6 +13,10 @@ const PORT = process.env.PORT;
 
 app.use(cors());
 app.use(express.json());
+
+(async () => {
+  runDemo();
+})();
 
 app.use('/auth', authRouter);
 app.use('/company', companyRouter);
