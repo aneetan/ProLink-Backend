@@ -1,4 +1,4 @@
 node_modules
+model-cache
 .env
 /src/generated/prisma
-model-cache
