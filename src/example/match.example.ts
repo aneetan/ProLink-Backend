@@ -1,4 +1,4 @@
-import embeddingService from '../services/embeddings.service';
+import embeddingService from '../services/embedding/embeddings.service';
 import { calculateSimilarity, interpretSimilarity, similarityToPercent } from '../utils/embeddings/similarity';
 import { storage } from './storage';
 
