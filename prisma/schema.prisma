@@ -31,6 +31,11 @@ enum Urgency {
   HIGH
 }
 
+enum PaymentType {
+  eSewa
+  Stripe
+}
+
 model User {
   id             Int       @id @default(autoincrement())
   name           String    
@@ -58,10 +63,12 @@ model Company {
   priceRangeMax     Int
   avgDeliveryTime   String
   userId            Int
-  user              User        @relation(fields: [userId], references: [id])
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
+  user              User          @relation(fields: [userId], references: [id])
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
   docs              CompanyDocs[]
+  projects          Project[]
+  payment           Payment[]
 }
 
 model Services {
@@ -81,6 +88,26 @@ model CompanyDocs{
   company           Company @relation(fields: [companyId], references: [id])
 }
 
+model Project {
+  projectId         Int       @id @default(autoincrement())
+  title             String
+  description       String
+  completionDate    String
+  projectUrl        String?
+  imageUrl          String? 
+  companyId         Int
+  company           Company   @relation(fields: [companyId], references: [id])
+}
+
+model Payment  {
+  paymentId      Int    @id @default(autoincrement())
+  type           PaymentType
+  accountName    String
+  accountNumber  String   @unique
+  companyId      Int
+  company        Company @relation(fields: [companyId], references: [id])
+}
+
 model Requirement {
   id              Int       @id @default(autoincrement())
   title           String
@@ -98,3 +125,4 @@ model Requirement {
   userId          Int
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+

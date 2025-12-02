@@ -1,5 +1,5 @@
 import { Company } from "@prisma/client";
-import { CreateCompanyData } from "../types/company.types";
+import { CreateCompanyData } from "../types/company/company.types";
 import prisma from "../config/dbconfig";
 
 class CompanyRepository {
