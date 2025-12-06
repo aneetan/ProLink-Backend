@@ -35,6 +35,7 @@
     "multer": "^2.0.2",
     "nodemailer": "^7.0.10",
     "otp-generator": "^4.0.1",
+    "pusher": "^5.2.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {

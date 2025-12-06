@@ -23,6 +23,10 @@ app.use('/company', companyRouter);
 app.use('/client/requirement', requirementRouter);
 app.use('/client', similarityRouter);
 
+app.get('/notifications', (req, res) => {
+   res.sendFile(path.join(_))
+})
+
 
 
 app.get('/', async(req: Request, res: Response) => {

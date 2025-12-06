@@ -94,6 +94,4 @@ export class OTPService {
       isExpired,
     };
   }
-
-
 }
