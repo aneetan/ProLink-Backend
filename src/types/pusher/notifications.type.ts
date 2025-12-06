@@ -11,7 +11,10 @@ export type NotificationType =
   message: string;
   type: NotificationType;
   userId?: number; 
+  isRead?: boolean;
   channel?: string; 
   data?: Record<string, any>;
   timestamp?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

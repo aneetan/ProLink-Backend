@@ -36,6 +36,14 @@ enum PaymentType {
   STRIPE
 }
 
+enum NotificationType {
+  quote_request_sent
+  new_quote_created
+  new_company_pending_verification
+  contract_generated
+  payment_received
+}
+
 model User {
   id             Int       @id @default(autoincrement())
   name           String    
@@ -48,6 +56,7 @@ model User {
   emailVerified  Boolean  @default(false)
   companies      Company[]
   requirements   Requirement[]
+  notifications  Notification[]
 }
 
 model Company {
@@ -144,5 +153,19 @@ model Requirement {
   updatedAt       DateTime  @updatedAt
   userId          Int
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id          Int   @id @default(autoincrement())
+  title       String
+  message     String
+  type        NotificationType
+  isRead      Boolean  @default(false)
+  channel     String?
+  data        Json?
+  userId      Int? 
+  user        User?    @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
