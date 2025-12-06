@@ -10,9 +10,9 @@ import { webhookService } from "../services/embedding/webhook.services";
 
 class CompanyController {
    createCompany = [
-      // validateSchema(CompanySchema),
-      // verifyAccessToken,
-      // requireCompany,
+      validateSchema(CompanySchema),
+      verifyAccessToken,
+      requireCompany,
       
       async(req:Request<{}, {}, CompanyInput>, res: Response, next: NextFunction): Promise<void> => {
          try {
