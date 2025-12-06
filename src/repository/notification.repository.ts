@@ -61,6 +61,58 @@ class NotificationRepository {
       return createdNotifications.map(this.mapToStoredNotification);
    }
 
+   /**
+   * Get notifications with filters
+   */
+  async getNotifications(filters: {
+      userId?: number;
+      type?: NotificationType;
+      channel?: string;
+      read?: boolean;
+      startDate?: Date;
+      endDate?: Date;
+      limit?: number;
+      offset?: number;
+   } = {}): Promise<NotificationData[]> {
+      try {
+         const {
+         userId,
+         type,
+         channel,
+         read,
+         startDate,
+         endDate,
+         limit = 50,
+         offset = 0
+         } = filters;
+
+         const where: any = {};
+
+         if (userId !== undefined) where.userId = userId;
+         if (type) where.type = type;
+         if (channel) where.channel = channel;
+         if (read !== undefined) where.read = read;
+         
+         if (startDate || endDate) {
+         where.createdAt = {};
+         if (startDate) where.createdAt.gte = startDate;
+         if (endDate) where.createdAt.lte = endDate;
+         }
+
+         const notifications = await prisma.notification.findMany({
+         where,
+         orderBy: { createdAt: 'desc' },
+         take: limit,
+         skip: offset
+         });
+
+         return notifications.map(this.mapToStoredNotification);
+      } catch (error) {
+         console.error('Error getting notifications:', error);
+         throw new Error(`Failed to get notifications: ${error.message}`);
+      }
+   }
+
    async getNotificationById(id: number): Promise<NotificationData | null> {
       const notification = await prisma.notification.findUnique({
         where: { id }

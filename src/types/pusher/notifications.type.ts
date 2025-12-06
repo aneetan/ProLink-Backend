@@ -17,4 +17,8 @@ export type NotificationType =
   timestamp?: Date;
   createdAt?: Date;
   updatedAt?: Date;
+  quoteId?: number;
+  companyId?: number;
+  requirementId?: number;
+  notificationIds?: number[];
 }

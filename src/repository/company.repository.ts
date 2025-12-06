@@ -60,6 +60,11 @@ class CompanyRepository {
       const company = await prisma.company.findFirst({ where: { userId } });
       return company;
    }
+
+   async getCompanyById(id: number){
+      const company = await prisma.company.findFirst({ where: { id } });
+      return company;
+   }
 }
 
 export default new CompanyRepository();

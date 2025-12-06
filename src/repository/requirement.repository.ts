@@ -24,6 +24,11 @@ class RequirementRepository {
             }
          });
       }
+
+   async getRequirementById(id: number){
+      const company = await prisma.requirement.findFirst({ where: { id } });
+      return company;
+   }
 }
 
 export default new RequirementRepository();
