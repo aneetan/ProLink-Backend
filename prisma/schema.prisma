@@ -36,6 +36,11 @@ enum PaymentType {
   STRIPE
 }
 
+enum BidRequestStatus {
+  SENT
+  DECLINED
+}
+
 enum NotificationType {
   quote_request_sent
   new_quote_created
@@ -57,6 +62,7 @@ model User {
   companies      Company[]
   requirements   Requirement[]
   notifications  Notification[]
+  bidRequest     BidRequest[]
 }
 
 model Company {
@@ -78,6 +84,7 @@ model Company {
   docs              CompanyDocs[]
   projects          Project[]
   payment           PaymentMethod[]
+  bidRequest        BidRequest[]
 }
 
 model Services {
@@ -153,6 +160,7 @@ model Requirement {
   updatedAt       DateTime  @updatedAt
   userId          Int
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bidRequest      BidRequest[]
 }
 
 model Notification {
@@ -169,3 +177,14 @@ model Notification {
   updatedAt   DateTime @updatedAt
 }
 
+model BidRequest {
+  id              Int     @id @default(autoincrement())
+  userId          Int
+  companyId       Int
+  requirementId   Int
+  requestedAt     DateTime @default(now())
+  status          BidRequestStatus?
+  user            User?    @relation(fields: [userId], references: [id])
+  company         Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  requirement     Requirement @relation(fields: [requirementId], references: [id], onDelete: Cascade)
+}

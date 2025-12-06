@@ -3,11 +3,10 @@ import cors from 'cors';
 import dotenv from "dotenv";
 import authRouter from './routes/auth.routes';
 import companyRouter from './routes/company.routes';
-import requirementRouter from './routes/requirement.route';
 import { findMatches, runDemo, setupExamples } from './example/match.example';
 import pineconeService from './services/pinecone.services';
-import similarityRouter from './routes/similarity.route';
 import notificationRouter from './routes/notification.route';
+import clientRouter from './routes/client.route';
 
 dotenv.config();
 
@@ -21,8 +20,7 @@ pineconeService.initialize();
 
 app.use('/auth', authRouter);
 app.use('/company', companyRouter);
-app.use('/client/requirement', requirementRouter);
-app.use('/client', similarityRouter);
+app.use('/client', clientRouter);
 app.use('/notification', notificationRouter);
 
 

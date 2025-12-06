@@ -24,7 +24,6 @@ export class NotificationService {
         ...notification,
         timestamp: new Date()
       });
-      console.log(storedNotification)
 
       // Prepare notification data for Pusher
       const pusherData: NotificationData = {

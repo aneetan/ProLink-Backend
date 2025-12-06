@@ -6,6 +6,7 @@ import companyRepository from '../repository/company.repository';
 import requirementRepository from '../repository/requirement.repository';
 import { authMiddleware } from '../middleware/authMiddleware';
 import notificationRepository from '../repository/notification.repository';
+import bidController from './bid.controller';
 
 class NotificationController{
    /**
