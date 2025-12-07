@@ -41,6 +41,13 @@ enum BidRequestStatus {
   DECLINED
 }
 
+enum BidStatus {
+  DECLINED
+  ACCEPTED
+  INITIATED
+  PENDING
+}
+
 enum NotificationType {
   quote_request_sent
   new_quote_created
@@ -85,6 +92,7 @@ model Company {
   projects          Project[]
   payment           PaymentMethod[]
   bidRequest        BidRequest[]
+  bid               Bid[]
 }
 
 model Services {
@@ -161,6 +169,7 @@ model Requirement {
   userId          Int
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   bidRequest      BidRequest[]
+  bid             Bid[]
 }
 
 model Notification {
@@ -187,4 +196,19 @@ model BidRequest {
   user            User?    @relation(fields: [userId], references: [id])
   company         Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   requirement     Requirement @relation(fields: [requirementId], references: [id], onDelete: Cascade)
+}
+
+
+model Bid {
+  id            Int       @id @default(autoincrement())
+  amount        Int       
+  deliveryTime  String
+  message       String?
+  companyId     Int
+  requirementId Int
+  status        BidStatus
+  company       Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  requirement   Requirement @relation(fields: [requirementId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
