@@ -6,11 +6,13 @@ import { errorResponse } from "../helpers/errorMsg.helper";
 import notificationService from "../services/notification.service";
 import requirementRepository from "../repository/requirement.repository";
 import companyRepository from "../repository/company.repository";
+import { authMiddleware } from "../middleware/authMiddleware";
 
 
 class BidController {
    createBidRequestWithNotification = [
-      // requireClient,
+      authMiddleware,
+      requireClient,
       async(req:Request<{}, {}, BidRequestData>, res: Response, next: NextFunction): Promise<void> => {
          try {
             const { userId, companyId, requirementId, userName } = req.body;
@@ -52,7 +54,8 @@ class BidController {
    ]
 
    getBidRequestForCompany = [
-      // requireCompany,
+      authMiddleware,
+      requireCompany,
       async(req:Request<{}, {}, BidRequestData>, res: Response, next: NextFunction): Promise<void> => {
          try {
             const { companyId } = req.query;
@@ -80,7 +83,8 @@ class BidController {
       }
    ]
 
-   getBidForRequirement = [
+   getBidRequestForRequirement = [
+      authMiddleware,
       requireClient,
       async(req:Request<{}, {}, BidRequestData>, res: Response, next: NextFunction): Promise<void> => {
          try {
@@ -110,7 +114,8 @@ class BidController {
    ]
 
    getRequirementsWithBidRequests = [
-      // requireCompany,
+      authMiddleware,
+      requireCompany,
       async (req: Request<{}, {}, {}, {companyId, requirementId, status, page, limit}>, res: Response, next: NextFunction): Promise<void> => {
       try {
         const { companyId, status, page = 1, limit = 10 } = req.query;
@@ -142,7 +147,8 @@ class BidController {
    ]
 
    submitQuoteRequest = [
-      // requireClient,
+      authMiddleware,
+      requireClient,
       async(req:Request<{}, {}, BidData>, res: Response, next: NextFunction): Promise<void> => {
          try {
             const { amount, deliveryTime, message, companyId, requirementId, status } = req.body;
@@ -188,6 +194,87 @@ class BidController {
             }
       }
    ]
+
+   getQuoteForRequirement = [
+      authMiddleware,
+      requireClient,
+      async(req:Request<{}, {}, BidRequestData>, res: Response, next: NextFunction): Promise<void> => {
+         try {
+            const { requirementId } = req.query;
+
+            if (!requirementId) {
+               res.status(400).json({ 
+                  success: false, 
+                  error: 'RequirementId is required as query parameter' 
+               });
+            }
+
+            const quotes = await bidRepository.getQuoteForRequirement(Number(requirementId));            
+
+            res.status(200).json({ 
+               success: true, 
+               message: `Bid fetch for requirement ${requirementId}`,
+               data: {
+                  quotes,
+                  count: quotes.length
+               }
+            });
+         } catch (error: any) {
+            errorResponse(error, res, error.message || "Failed to fetch bids for company");
+         }
+      }
+   ]
+
+   acceptQuoteByClient = [
+      authMiddleware,
+      requireClient,
+      async(req:Request<{quoteId: string}, {}, BidData>, res: Response, next: NextFunction): Promise<void> => {
+         try {
+            const { quoteId } = req.params;
+
+            if (!quoteId) {
+               res.status(400).json({ error: "quoteId is required" });
+            }
+
+            const updatedBid = await bidRepository.acceptQuoteByClient(Number(quoteId));
+
+
+            res.status(200).json({
+               message: "Quote accepted successfully",
+               data: updatedBid,
+            });
+
+         } catch (error: any) {
+            errorResponse(error, res, error.message || "Failed to fetch bids for company");
+         }
+      }
+   ]
+
+   declineQuoteByClient = [
+      authMiddleware,
+      requireClient,
+      async(req:Request<{quoteId: string}, {}, BidData>, res: Response, next: NextFunction): Promise<void> => {
+         try {
+            const { quoteId } = req.params;
+
+            if (!quoteId) {
+               res.status(400).json({ error: "quoteId is required" });
+            }
+
+            const updatedBid = await bidRepository.declineQuoteByClient(Number(quoteId));
+
+            res.status(200).json({
+               message: "Quote declined successfully",
+               data: updatedBid,
+            });
+
+         } catch (error: any) {
+            errorResponse(error, res, error.message || "Failed to fetch bids for company");
+         }
+      }
+   ]
+
+
 }
 
 export default new BidController();

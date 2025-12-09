@@ -103,6 +103,88 @@ class BidRepository {
 
       return bidSubmitted;
   }
+
+
+  /**
+   * Get quotes for requirement
+   */
+  async getQuoteForRequirement(requirementId: number): Promise<BidData[]> {
+      const quotesForRequirement =  await prisma.bid.findMany({
+         where: { requirementId },
+         include: {
+            company: {
+               select: {
+                  id: true,
+                  name: true,
+                  docs: {
+                     select: {
+                        logo: true,
+                     },
+                     take: 1,     // if multiple docs exist, only get the latest or first
+                  },
+               },
+            },
+         },
+         orderBy: {
+            createdAt: "desc",
+         },
+      });
+
+      return quotesForRequirement.map(q => ({
+         ...q,
+         company: {
+            id: q.company.id,
+            name: q.company.name,
+            logo: q.company.docs[0]?.logo || null
+         }
+      }));;
+  }
+
+  async acceptQuoteByClient(quoteId: number) {
+      return await prisma.bid.update({
+         where: { id: quoteId },
+         data: {
+            status: "ACCEPTED",
+         },
+         include: {
+            company: {
+            select: {
+               name: true,
+            },
+            },
+            requirement: {
+            select: {
+               title: true,
+               userId: true,   
+            },
+            },
+         },
+      });
+   }
+
+   async declineQuoteByClient(quoteId: number) {
+      return await prisma.bid.update({
+         where: { id: quoteId },
+         data: {
+            status: "DECLINED",
+         },
+         include: {
+            company: {
+            select: {
+               name: true,
+            },
+            },
+            requirement: {
+            select: {
+               title: true,
+               userId: true,   
+            },
+            },
+         },
+      });
+   }
+
+
 }
 
 export default new BidRepository();
