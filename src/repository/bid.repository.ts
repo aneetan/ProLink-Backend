@@ -139,6 +139,52 @@ class BidRepository {
          }
       }));;
   }
+
+  async acceptQuoteByClient(quoteId: number) {
+      return await prisma.bid.update({
+         where: { id: quoteId },
+         data: {
+            status: "ACCEPTED",
+         },
+         include: {
+            company: {
+            select: {
+               name: true,
+            },
+            },
+            requirement: {
+            select: {
+               title: true,
+               userId: true,   
+            },
+            },
+         },
+      });
+   }
+
+   async declineQuoteByClient(quoteId: number) {
+      return await prisma.bid.update({
+         where: { id: quoteId },
+         data: {
+            status: "DECLINED",
+         },
+         include: {
+            company: {
+            select: {
+               name: true,
+            },
+            },
+            requirement: {
+            select: {
+               title: true,
+               userId: true,   
+            },
+            },
+         },
+      });
+   }
+
+
 }
 
 export default new BidRepository();

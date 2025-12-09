@@ -201,7 +201,6 @@ class BidController {
       async(req:Request<{}, {}, BidRequestData>, res: Response, next: NextFunction): Promise<void> => {
          try {
             const { requirementId } = req.query;
-            console.log(requirementId)
 
             if (!requirementId) {
                res.status(400).json({ 
@@ -225,6 +224,57 @@ class BidController {
          }
       }
    ]
+
+   acceptQuoteByClient = [
+      authMiddleware,
+      requireClient,
+      async(req:Request<{quoteId: string}, {}, BidData>, res: Response, next: NextFunction): Promise<void> => {
+         try {
+            const { quoteId } = req.params;
+
+            if (!quoteId) {
+               res.status(400).json({ error: "quoteId is required" });
+            }
+
+            const updatedBid = await bidRepository.acceptQuoteByClient(Number(quoteId));
+
+
+            res.status(200).json({
+               message: "Quote accepted successfully",
+               data: updatedBid,
+            });
+
+         } catch (error: any) {
+            errorResponse(error, res, error.message || "Failed to fetch bids for company");
+         }
+      }
+   ]
+
+   declineQuoteByClient = [
+      authMiddleware,
+      requireClient,
+      async(req:Request<{quoteId: string}, {}, BidData>, res: Response, next: NextFunction): Promise<void> => {
+         try {
+            const { quoteId } = req.params;
+
+            if (!quoteId) {
+               res.status(400).json({ error: "quoteId is required" });
+            }
+
+            const updatedBid = await bidRepository.declineQuoteByClient(Number(quoteId));
+
+            res.status(200).json({
+               message: "Quote declined successfully",
+               data: updatedBid,
+            });
+
+         } catch (error: any) {
+            errorResponse(error, res, error.message || "Failed to fetch bids for company");
+         }
+      }
+   ]
+
+
 }
 
 export default new BidController();

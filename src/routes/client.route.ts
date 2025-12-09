@@ -13,5 +13,8 @@ clientRouter.post('/request-bid', bidController.createBidRequestWithNotification
 clientRouter.get('/:requirementId/bid', bidController.getBidRequestForRequirement)
 
 clientRouter.get('/quote', bidController.getQuoteForRequirement)
+clientRouter.put('/accept-quote/:quoteId', bidController.acceptQuoteByClient)
+clientRouter.put('/decline-quote/:quoteId', bidController.declineQuoteByClient)
+
 
 export default clientRouter;
