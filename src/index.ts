@@ -8,6 +8,7 @@ import pineconeService from './services/pinecone.services';
 import notificationRouter from './routes/notification.route';
 import clientRouter from './routes/client.route';
 import PusherConfig from './config/pusher.config';
+import chatRouter from './routes/chat.routes';
 
 dotenv.config();
 
@@ -23,6 +24,9 @@ app.use('/auth', authRouter);
 app.use('/company', companyRouter);
 app.use('/client', clientRouter);
 app.use('/notification', notificationRouter);
+app.use('/chat', chatRouter);
+
+
 
 app.get('/', async(req: Request, res: Response) => {
    res.json({ message: 'Hello from ProLink' });
