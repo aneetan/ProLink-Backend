@@ -117,7 +117,7 @@ class ChatController {
       
       // Trigger real-time event for other participant
       await chatService.triggerMessageUpdated(chatId, { 
-        type: 'marked-read',
+        type: 'READ',
         messageIds,
         userId 
       });

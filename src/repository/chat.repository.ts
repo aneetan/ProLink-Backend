@@ -130,10 +130,6 @@ class ChatRepository {
 
    // Mark messages as read
   async markMessagesAsRead(chatId: number, userId: number, messageIds: number[]) {
-    // Verify user is part of the chat
-    const chat = await prisma.chat.findUnique({
-      where: { id: chatId },
-    });
     
     const messages =  await prisma.message.updateMany({
       where: {
@@ -144,6 +140,7 @@ class ChatRepository {
          ],
       },
       data: {
+         status: "READ",
          readBy: {
             push: userId,
          },
