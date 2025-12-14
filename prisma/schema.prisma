@@ -56,6 +56,18 @@ enum NotificationType {
   payment_received
 }
 
+enum ChatStatus {
+  ACTIVE
+  ARCHIVED
+  BLOCKED
+}
+
+enum MessageStatus {
+  SENT
+  DELIVERED
+  READ
+}
+
 model User {
   id             Int       @id @default(autoincrement())
   name           String    
@@ -66,10 +78,18 @@ model User {
   password       String 
   status         Status   @default(PENDING)
   emailVerified  Boolean  @default(false)
+
   companies      Company[]
   requirements   Requirement[]
   notifications  Notification[]
   bidRequest     BidRequest[]
+
+  chatsAsParticipant1 Chat[] @relation("ChatParticipant1")
+  chatsAsParticipant2 Chat[] @relation("ChatParticipant2")
+  messagesSent        Message[] @relation("MessageSender")
+
+  presence       UserPresence?
+
 }
 
 model Company {
@@ -214,3 +234,55 @@ model Bid {
 
    @@unique([requirementId, companyId])
 }
+
+model Chat {
+  id            Int        @id @default(autoincrement())
+  participant1Id Int          // User ID
+  participant2Id Int          // User ID
+  participant1   User         @relation("ChatParticipant1", fields: [participant1Id], references: [id])
+  participant2   User         @relation("ChatParticipant2", fields: [participant2Id], references: [id])
+  status         ChatStatus    @default(ACTIVE)
+  lastMessageId   Int?
+  lastMessage   Message?      @relation("LastMessage", fields: [lastMessageId], references: [id])
+  messages       Message[]  @relation("MessagesInChat")
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  // Ensure unique chat between two users
+  @@unique([participant1Id, participant2Id])
+  @@unique([lastMessageId])
+  @@index([participant1Id, participant2Id])
+}
+
+model Message {
+  id            Int        @id @default(autoincrement())
+  chatId        Int
+  chat          Chat          @relation("MessagesInChat",fields: [chatId], references: [id], onDelete: Cascade)
+  senderId      Int
+  sender        User         @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  content       String
+  status        MessageStatus @default(SENT)
+  isEdited      Boolean       @default(false)
+  isDeleted     Boolean       @default(false)
+  attachments   Json? 
+  readBy        Int[]         // Array of user IDs who have read the message
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  chatAsLastMessage Chat? @relation("LastMessage")
+  
+
+  @@index([chatId, createdAt])
+}
+
+model UserPresence {
+  id          Int       @id @default(autoincrement())
+  userId      Int       @unique
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isOnline    Boolean   @default(false)
+  lastSeen    DateTime  @default(now())
+  socketId    String?
+  updatedAt   DateTime  @updatedAt
+}
+
+
+
