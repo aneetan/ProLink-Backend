@@ -35,7 +35,7 @@ export interface ChatData {
 export interface SendMessageDto {
   content: string;
   receiverId: number;
-  attachments?: string[];
+  attachments?: { url: string; name: string }[];
 }
 
 export interface MarkAsReadDto {

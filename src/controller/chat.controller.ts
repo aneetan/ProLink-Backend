@@ -19,16 +19,12 @@ class ChatController {
          chat.participant1Id,
          chat.participant2Id,
          ]).filter(id => id !== userId);
-         
-         const presences = await chatRepository.getUsersPresence(participantIds);
-         const presenceMap = new Map(presences.map(p => [p.userId, p]));
-         
+                  
          const chatsWithPresence = chats.map(chat => ({
          ...chat,
+         unreadCount: chat.unreadCount,
          otherParticipant: {
             ...chat.otherParticipant,
-            isOnline: presenceMap.get(chat.otherParticipant.id)?.isOnline || false,
-            lastSeen: presenceMap.get(chat.otherParticipant.id)?.lastSeen || null,
          },
          }));
          
@@ -73,7 +69,16 @@ class ChatController {
          const limit = parseInt(req.query.limit as string) || 50;
          
          const messages = await chatRepository.getChatMessages(Number(chatId), userId, page, limit);
-         res.status(200).json({data: messages});
+         const parsedMessages = messages.map(msg => ({
+         ...msg,
+         attachments: Array.isArray(msg.attachments)
+            ? msg.attachments.map(att =>
+               typeof att === "string" ? JSON.parse(att) : att
+               )
+            : [],
+         }));
+
+         res.status(200).json({data: parsedMessages});
       } catch (error: any) {
          res.status(400).json({ error: error.message });
       }
@@ -92,15 +97,24 @@ class ChatController {
          
          // Send message
          const message = await chatRepository.sendMessage(chat.id, userId, content, attachments);
+
+         const parsedMessage = {
+         ...message,
+         attachments: Array.isArray(message.attachments)
+            ? message.attachments.map(att =>
+               typeof att === "string" ? JSON.parse(att) : att
+               )
+            : [],
+         };
       
                   
          res.json({
-            message,
+            parsedMessage,
             chatId: chat.id,
          });
 
          // Trigger real-time event
-         chatService.triggerMessageSent(chat.id, message);
+         chatService.triggerMessageSent(chat.id, parsedMessage);
       } catch (error: any) {
          res.status(400).json({ error: error.message });
       }

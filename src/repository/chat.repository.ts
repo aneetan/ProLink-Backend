@@ -51,7 +51,7 @@ class ChatRepository {
    }
 
    // Send a message
-   async sendMessage(chatId: number, senderId: number, content: string, attachments: string[] = []) {
+   async sendMessage(chatId: number, senderId: number, content: string, attachments: { url: string; name: string }[] = []) {
       // Verify user is part of the chat
       const chat = await prisma.chat.findUnique({
          where: { id: chatId },
@@ -64,7 +64,7 @@ class ChatRepository {
             chatId,
             senderId,
             content,
-            attachments,
+            attachments: attachments.map(att => JSON.stringify(att)),
             readBy: [senderId], // Sender has read their own message
          },
          });
@@ -86,7 +86,7 @@ class ChatRepository {
 
    // Get user's chats
   async getUserChats(userId: number) {
-    const chats = await prisma.chat.findMany({
+   const chats = await prisma.chat.findMany({
       where: {
         OR: [
           { participant1Id: userId },
@@ -98,21 +98,15 @@ class ChatRepository {
         participant1: true,
         participant2: true,
         lastMessage: true,
-        messages: {
-          where: {
-            isDeleted: false,
-            NOT: {
-              readBy: {
-                has: userId,
+        _count: {
+          select: {
+            messages: {
+              where: {
+                isDeleted: false,
+                senderId: { not: userId },
+                status: { in: ['SENT', 'DELIVERED'] },
               },
             },
-            senderId: {
-              not: userId,
-            },
-          },
-          take: 1,
-          orderBy: {
-            createdAt: 'desc',
           },
         },
       },
@@ -120,12 +114,12 @@ class ChatRepository {
         updatedAt: 'desc',
       },
     });
-    
+
     return chats.map(chat => ({
       ...chat,
       otherParticipant: chat.participant1Id === userId ? chat.participant2 : chat.participant1,
-      unreadCount: chat.messages.length,
-    }));
+      unreadCount: chat._count.messages,
+    }))
   }
 
    // Mark messages as read

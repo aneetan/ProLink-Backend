@@ -264,7 +264,7 @@ model Message {
   status        MessageStatus @default(SENT)
   isEdited      Boolean       @default(false)
   isDeleted     Boolean       @default(false)
-  attachments   String[]
+  attachments   Json? 
   readBy        Int[]         // Array of user IDs who have read the message
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
