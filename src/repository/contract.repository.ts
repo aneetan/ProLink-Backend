@@ -1,0 +1,116 @@
+import prisma from "../config/dbconfig";
+import { ContractWithRelations, CreateProjectFormData } from "../types/contract.type";
+import { generateProjectId } from "../utils/projectId.util";
+
+class ContractRepository {
+   /**
+   * Store contract in database
+   */
+  async createContractTable(data: CreateProjectFormData): Promise<ContractWithRelations> {
+      const projectId = generateProjectId();
+
+      const newContract = await prisma.contract.create({
+        data: {
+          projectId,
+          serviceType: data.serviceType,
+          amount: data.amount,
+          advancePercent: data.advancePercent,
+          durationDays: data.durationDays,
+          defectLiabilityMonths: data.defectLiabilityMonths,
+          location: data.location,
+          scopeSummary: data.scopeSummary,
+          status: 'PENDING_SIGNATURE',
+          paymentStatus: 'PENDING',
+          companyId: data.companyId,
+          clientId: data.clientId,
+          requirementId: data.requirementId,
+        },
+        include: {
+          company: true,
+          client: true,
+          requirement: true,
+        }
+      })
+
+      return newContract;
+  }
+
+   async handleContractAcceptance(contractId: number): Promise<void> {
+      const contract = await prisma.contract.findUnique({
+        where: { id: contractId },
+        include: { requirement: true }
+      })
+
+      if (!contract) throw new Error("Contract not found");
+
+      await prisma.$transaction(async (tx) => {
+          // 1. Update contract status to ACTIVE
+         await tx.contract.update({
+            where: { id: contractId },
+            data: {
+            status: "ACTIVE",
+            },
+         });
+
+          // 2. Expire all bids related to the same requirement
+         await tx.bid.updateMany({
+            where: {
+            requirementId: contract.requirementId,
+            status: {
+               not: "ACCEPTED", 
+            },
+            },
+            data: {
+               status: "DECLINED",
+            },
+         });
+      })
+
+   }
+
+   async declineContractByClient(contractId: number) {
+      return await prisma.contract.update({
+         where: { id: contractId },
+         data: {
+            status: "TERMINATED",
+         },
+      });
+   }  
+
+   async getContractsForCompany(companyId: number) {
+      return await prisma.contract.findMany({
+            where: {
+               companyId,
+            },
+            include: {
+               requirement: true,
+               client: true,
+            },
+            orderBy: {
+               createdAt: "desc",
+            },
+         });
+   }
+
+   async getAcceptedContractsForClient(clientId: number) {
+      return await prisma.contract.findMany({
+         where: {
+            clientId,
+            status: {
+            in: ["ACTIVE", "COMPLETED", "PENDING_SIGNATURE"],
+            },
+         },
+         include: {
+            company: true,
+            requirement: true,
+         },
+         orderBy: {
+            createdAt: "desc",
+         },
+      });
+   }
+
+
+}
+
+export default new ContractRepository();
