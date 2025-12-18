@@ -68,6 +68,26 @@ enum MessageStatus {
   READ
 }
 
+enum ContractStatus {
+  PENDING_SIGNATURE
+  ACTIVE
+  COMPLETED
+  TERMINATED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PARTIALLY_PAID
+  FULLY_PAID
+  CANCELLED
+}
+
+enum ServiceType {
+  MEP
+  IT
+}
+
 model User {
   id             Int       @id @default(autoincrement())
   name           String    
@@ -89,6 +109,7 @@ model User {
   messagesSent        Message[] @relation("MessageSender")
 
   presence       UserPresence?
+  contracts       Contract[]
 
 }
 
@@ -113,6 +134,7 @@ model Company {
   payment           PaymentMethod[]
   bidRequest        BidRequest[]
   bid               Bid[]
+  contracts         Contract[]
 }
 
 model Services {
@@ -190,6 +212,7 @@ model Requirement {
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   bidRequest      BidRequest[]
   bid             Bid[]
+  contracts       Contract[]
 }
 
 model Notification {
@@ -282,6 +305,34 @@ model UserPresence {
   lastSeen    DateTime  @default(now())
   socketId    String?
   updatedAt   DateTime  @updatedAt
+}
+
+model Contract {
+  id                      Int               @id @default(autoincrement())
+  projectId               String            @unique
+  serviceType             ServiceType
+  amount                  Int 
+  advancePercent          Int
+  durationDays            String
+  defectLiabilityMonths   Int
+  location                String
+  scopeSummary            String
+  status                  ContractStatus      @default(PENDING_SIGNATURE)
+  companyId               Int
+  company                 Company             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  clientId                Int
+  client                  User                @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  requirementId           Int
+  requirement             Requirement        @relation(fields: [requirementId], references: [id], onDelete: Cascade)
+  createdAt               DateTime           @default(now())
+  updatedAt               DateTime           @updatedAt
+  paymentStatus           PaymentStatus      @default(PENDING)
+
+  @@index([projectId])
+  @@index([companyId])
+  @@index([clientId])
+  @@index([status])
+  @@index([paymentStatus])
 }
 
 
