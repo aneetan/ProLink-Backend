@@ -24,7 +24,7 @@ export async function generateContractDocument(contractId: number) {
       ? "mep-contract.hbs"
       : "it-contract.hbs";
 
-  const templatePath = path.join(process.cwd(), "templates", templateFile);
+  const templatePath = path.join("D:/SewaSutra/SewaSutra-Backend/src/services/templates", templateFile);
   const source = fs.readFileSync(templatePath, "utf8");
   const template = Handlebars.compile(source);
 
@@ -60,7 +60,7 @@ export async function generateContractDocument(contractId: number) {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
         folder: "contracts",
-        resource_type: "raw", // IMPORTANT for PDF
+        resource_type: "auto", // IMPORTANT for PDF
         public_id: `contract-${contract.projectId}`,
       },
       (error, result) => {

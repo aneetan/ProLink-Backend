@@ -113,6 +113,23 @@ class ContractRepository {
       });
    }
 
+   async getPendingContractsForClient(clientId: number) {
+      return await prisma.contract.findMany({
+         where: {
+            clientId,
+            status: "PENDING_SIGNATURE",
+         },
+         include: {
+            company: true,
+            requirement: true,
+         },
+         orderBy: {
+            createdAt: "desc",
+         },
+      });
+   }
+
+
 
 }
 
