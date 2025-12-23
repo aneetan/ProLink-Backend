@@ -10,6 +10,7 @@ import clientRouter from './routes/client.route';
 import PusherConfig from './config/pusher.config';
 import chatRouter from './routes/chat.routes';
 import contractRouter from './routes/contract.route';
+import paymentRouter from './routes/payment.route';
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ const PORT = process.env.PORT;
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 pineconeService.initialize();
 
@@ -27,9 +29,7 @@ app.use('/client', clientRouter);
 app.use('/notification', notificationRouter);
 app.use('/chat', chatRouter);
 app.use('/contract', contractRouter);
-
-
-
+app.use('/payment', paymentRouter);
 
 app.get('/', async(req: Request, res: Response) => {
    res.json({ message: 'Hello from ProLink' });
