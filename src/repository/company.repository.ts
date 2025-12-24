@@ -82,7 +82,25 @@ class CompanyRepository {
             },
          },
       });
-      }
+   }
+
+   async isCompanyUser(userId: number): Promise<boolean> {
+      const user = await prisma.user.findUnique({
+         where: { id: userId },
+         select: {
+            role: true,
+            companies: {
+            select: { id: true },
+            take: 1,
+            },
+         },
+      });
+
+      if (!user) return false;
+
+      return user.role === "COMPANY" && user.companies.length > 0;
+   }
+
 
 
 

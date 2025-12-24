@@ -68,7 +68,6 @@ class CompanyController {
    getCompanyProfile = [
       async(req:Request, res: Response, next: NextFunction): Promise<void> => {
          const companyId = Number(req.params.companyId);
-
          const company = await companyRepository.getCompanyProfileById(companyId);
 
          if (!company) {
@@ -93,6 +92,16 @@ class CompanyController {
                logo: company.docs?.[0]?.logo,
             };
          res.status(201).json(response);
+      }
+   ]
+
+   hasCompanyData = [
+      async(req:Request, res: Response, next: NextFunction): Promise<void> => {
+         const request = req as Request & { userId: string };
+         const userId = Number(request.userId);
+
+         const isCompany = await companyRepository.isCompanyUser(userId);
+         res.status(201).json({ isCompany });
       }
    ]
 

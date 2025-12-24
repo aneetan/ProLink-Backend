@@ -3,8 +3,11 @@ import companyController from "../controller/company.controller";
 import projectController from "../controller/project.controller";
 import paymentController from "../controller/payment.controller";
 import bidController from "../controller/bid.controller";
+import { authMiddleware } from "../middleware/authMiddleware";
 
 const companyRouter = Router();
+
+companyRouter.use(authMiddleware);
 
 
 companyRouter.post('/create', companyController.createCompany);
@@ -25,5 +28,7 @@ companyRouter.post('/submit-quote', bidController.submitQuoteRequest);
 
 companyRouter.get('/bid-status/:requirementId', bidController.checkCompanyBidStatus);
 
+//has KYC filled
+companyRouter.get('/haskyc', companyController.hasCompanyData)
 
 export default companyRouter;
