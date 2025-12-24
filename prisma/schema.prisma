@@ -88,6 +88,12 @@ enum ServiceType {
   IT
 }
 
+enum StatusForPayment {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
 model User {
   id             Int       @id @default(autoincrement())
   name           String    
@@ -110,6 +116,8 @@ model User {
 
   presence       UserPresence?
   contracts       Contract[]
+  payment         AppPayment[]
+  Review          Review[]
 
 }
 
@@ -135,6 +143,8 @@ model Company {
   bidRequest        BidRequest[]
   bid               Bid[]
   contracts         Contract[]
+  appPayment         AppPayment[]
+  review             Review[]
 }
 
 model Services {
@@ -328,6 +338,8 @@ model Contract {
   updatedAt               DateTime           @updatedAt
   paymentStatus           PaymentStatus      @default(PENDING)
   contractFile            String?
+  payment              AppPayment[]
+
 
   @@index([projectId])
   @@index([companyId])
@@ -335,6 +347,56 @@ model Contract {
   @@index([status])
   @@index([paymentStatus])
 }
+
+model AppPayment {
+  id                Int           @id @default(autoincrement())
+  
+  gateway           PaymentType
+  amount            Float
+  status            StatusForPayment    @default(PENDING)
+  gatewayRefId      String?
+  transactionId     String
+  gatewayPayload    Json?
+
+  contractId        Int
+  contract          Contract         @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  clientId          Int
+  client            User             @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  companyId         Int
+  company           Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  createdAt         DateTime
+  updatedAt         DateTime
+
+  @@index([contractId])
+  @@index([clientId])
+  @@index([companyId])
+  @@index([gateway])
+  @@index([status])
+}
+
+model Review {
+  id          Int          @id @default(autoincrement())
+  rating      Int          
+  comment     String?
+
+  clientId    Int
+  client      User         @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  companyId   Int
+  company     Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  deletedAt   Boolean      @default(false)    
+
+  @@unique([clientId, companyId])
+  @@index([companyId])
+  @@index([clientId])
+}
+
 
 
 
