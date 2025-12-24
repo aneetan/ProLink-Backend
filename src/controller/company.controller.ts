@@ -90,6 +90,7 @@ class CompanyController {
                   avgDeliveryTime: company.avgDeliveryTime,
                },
                logo: company.docs?.[0]?.logo,
+               status: company.user.status
             };
          res.status(201).json(response);
       }

@@ -80,6 +80,11 @@ class CompanyRepository {
                   logo: true,
                },
             },
+            user: {
+               select: {
+                  status: true,
+               }
+            }
          },
       });
    }
