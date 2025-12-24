@@ -11,6 +11,7 @@ import PusherConfig from './config/pusher.config';
 import chatRouter from './routes/chat.routes';
 import contractRouter from './routes/contract.route';
 import paymentRouter from './routes/payment.route';
+import reviewRouter from './routes/review.route';
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ app.use('/notification', notificationRouter);
 app.use('/chat', chatRouter);
 app.use('/contract', contractRouter);
 app.use('/payment', paymentRouter);
+app.use('/review', reviewRouter);
 
 app.get('/', async(req: Request, res: Response) => {
    res.json({ message: 'Hello from ProLink' });
