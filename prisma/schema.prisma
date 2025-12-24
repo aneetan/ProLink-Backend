@@ -117,6 +117,7 @@ model User {
   presence       UserPresence?
   contracts       Contract[]
   payment         AppPayment[]
+  Review          Review[]
 
 }
 
@@ -143,6 +144,7 @@ model Company {
   bid               Bid[]
   contracts         Contract[]
   appPayment         AppPayment[]
+  review             Review[]
 }
 
 model Services {
@@ -374,6 +376,27 @@ model AppPayment {
   @@index([gateway])
   @@index([status])
 }
+
+model Review {
+  id          Int          @id @default(autoincrement())
+  rating      Int          
+  comment     String?
+
+  clientId    Int
+  client      User         @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  companyId   Int
+  company     Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  deletedAt   Boolean      @default(false)    
+
+  @@unique([clientId, companyId])
+  @@index([companyId])
+  @@index([clientId])
+}
+
 
 
 
