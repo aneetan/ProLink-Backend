@@ -64,6 +64,7 @@ class BidRepository {
             include: {
                requirement: true,
                company: true,
+               user: true
             },
             skip,
             take: limit,

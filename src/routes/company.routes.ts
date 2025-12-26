@@ -36,6 +36,6 @@ companyRouter.get('/bid-status/:requirementId', bidController.checkCompanyBidSta
 companyRouter.get('/haskyc', companyController.hasCompanyData)
 
 companyRouter.get('/contracts/pending', contractController.getCompanyPendingContracts)
-
+companyRouter.get('/contract/projects', contractController.getCompanyProjects)
 
 export default companyRouter;

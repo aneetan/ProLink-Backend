@@ -107,6 +107,7 @@ class ContractRepository {
          include: {
             requirement: true,
             client: true,
+            company: true
          },
          orderBy: {
             createdAt: "desc",
