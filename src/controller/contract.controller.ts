@@ -113,6 +113,48 @@ class ContractRepository {
       }
    ]
 
+   getCompanyPendingContracts = [
+      async(req:Request, res: Response, next: NextFunction): Promise<void> => {
+         try {
+            const request = req as Request & { userId: string };
+            const companyId = Number(request.userId);
+
+            const finalQuotes = await contractRepository.getPendingSignatureContractsForCompany(companyId);
+               res.status(200).json({
+                  message: "final quotes for company fetched successfully",
+                  totalContracts: finalQuotes.length,
+                  data: finalQuotes,
+               });
+
+         } catch (error: any) {
+            res.status(500).json({
+               message: error.message || "Failed to fetch contract requests",
+            });
+         }
+      }
+   ]
+
+   getCompanyProjects = [
+      async(req:Request, res: Response, next: NextFunction): Promise<void> => {
+         try {
+            const request = req as Request & { userId: string };
+            const companyId = Number(request.userId);
+
+            const projects = await contractRepository.getProjectsForCompany(companyId);
+               res.status(200).json({
+                  message: "final quotes for company fetched successfully",
+                  totalProjects: projects.length,
+                  data: projects,
+               });
+
+         } catch (error: any) {
+            res.status(500).json({
+               message: error.message || "Failed to fetch contract requests",
+            });
+         }
+      }
+   ]
+
 }
 
 export default new ContractRepository();
