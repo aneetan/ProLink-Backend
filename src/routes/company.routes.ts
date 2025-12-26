@@ -4,6 +4,7 @@ import projectController from "../controller/project.controller";
 import paymentController from "../controller/payment.controller";
 import bidController from "../controller/bid.controller";
 import { authMiddleware } from "../middleware/authMiddleware";
+import contractController from "../controller/contract.controller";
 
 const companyRouter = Router();
 
@@ -33,5 +34,8 @@ companyRouter.get('/bid-status/:requirementId', bidController.checkCompanyBidSta
 
 //has KYC filled
 companyRouter.get('/haskyc', companyController.hasCompanyData)
+
+companyRouter.get('/contracts/pending', contractController.getCompanyPendingContracts)
+
 
 export default companyRouter;

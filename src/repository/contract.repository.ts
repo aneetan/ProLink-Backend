@@ -80,20 +80,41 @@ class ContractRepository {
       });
    }  
 
-   async getContractsForCompany(companyId: number) {
+   async getPendingSignatureContractsForCompany(companyId: number) {
       return await prisma.contract.findMany({
-            where: {
-               companyId,
-            },
-            include: {
-               requirement: true,
-               client: true,
-            },
-            orderBy: {
-               createdAt: "desc",
-            },
-         });
+         where: {
+            companyId,
+            status: "PENDING_SIGNATURE",
+         },
+         include: {
+            requirement: true,
+            client: true,
+         },
+         orderBy: {
+            createdAt: "desc",
+         },
+      });
    }
+
+   async getProjectsForCompany(companyId: number) {
+      return await prisma.contract.findMany({
+         where: {
+            companyId,
+            status: {
+            not: "PENDING_SIGNATURE",
+            },
+         },
+         include: {
+            requirement: true,
+            client: true,
+         },
+         orderBy: {
+            createdAt: "desc",
+         },
+      });
+   }
+
+
 
    async getAcceptedContractsForClient(clientId: number) {
       return await prisma.contract.findMany({
